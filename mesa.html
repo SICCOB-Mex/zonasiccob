@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Descargas Privado</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        /* Bloqueo de selección de texto */
+        body { 
+            background-color: #f0f2f5; 
+            font-family: 'Segoe UI', sans-serif;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none; 
+        }
+        #login-container { height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-card { width: 400px; padding: 30px; border-radius: 15px; background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        #main-content { display: none; padding: 30px; animation: fadeIn 0.5s; }
+        .download-card { border: none; transition: transform 0.2s; border-radius: 12px; border-top: 4px solid #0d6efd; }
+        .download-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .btn-download { border-radius: 8px; font-weight: bold; }
+        .welcome-text { color: #2c3e50; font-weight: 700; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+<div id="login-container">
+    <div class="login-card text-center">
+        <div class="mb-4">
+            <img src="https://img.icons8.com/fluency/96/shield-lock.png" alt="Lock">
+        </div>
+        <h3 class="mb-3">🔒 Acceso Privado</h3>
+        <p class="text-muted small">Ingresa tu correo institucional o personal</p>
+        <div class="mb-3 text-start">
+            <label class="form-label">Correo Electrónico</label>
+            <input type="email" id="emailInput" class="form-control" placeholder="nombre@correo.com">
+        </div>
+        <button onclick="validarAcceso()" class="btn btn-primary w-100 py-2">Ingresar</button>
+        <div id="errorMsg" class="text-danger mt-3 small" style="display:none;">⚠️ Correo no autorizado.</div>
+    </div>
+</div>
+
+<div id="main-content" class="container">
+    <div class="d-flex justify-content-between align-items-center mb-5 pb-3 border-bottom">
+        <div>
+            <h2 class="welcome-text" id="saludoDinamico">Hola</h2>
+            <p class="text-muted mb-0">Portal de Herramientas Corporativas</p>
+        </div>
+        <button onclick="cerrarSesion()" class="btn btn-outline-danger btn-sm px-4">Cerrar Sesión</button>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 download-card p-4 shadow-sm text-center">
+                <img src="https://img.icons8.com/color/96/microsoft-office-2019.png" class="mx-auto" width="80">
+                <h5 class="mt-3">Microsoft Office</h5>
+                <p class="text-muted small">Instalador oficial para estaciones de trabajo.</p>
+                <a href="#" class="btn btn-success w-100 btn-download mt-auto">Descargar</a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 download-card p-4 shadow-sm text-center">
+                <img src="https://img.icons8.com/color/96/shield.png" class="mx-auto" width="80">
+                <h5 class="mt-3">Antivirus</h5>
+                <p class="text-muted small">Protección de seguridad corporativa.</p>
+                <a href="#" class="btn btn-primary w-100 btn-download mt-auto">Descargar</a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 download-card p-4 shadow-sm text-center">
+                <img src="https://img.icons8.com/color/96/globe.png" class="mx-auto" width="80">
+                <h5 class="mt-3">Acceso VPN</h5>
+                <p class="text-muted small">Configuración para acceso remoto seguro.</p>
+                <a href="#" class="btn btn-secondary w-100 btn-download mt-auto">Descargar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- BLOQUEOS DE TECLADO ---
+    document.addEventListener('keydown', function(e) {
+        if (e.keyCode == 123 || 
+            (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || 
+            (e.ctrlKey && e.keyCode == 85)) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // --- CONFIGURACIÓN DE ACCESO ---
+    const CORREOS_AUTORIZADOS = ["shernandez@siccob.com.mx", "jacosta@siccob.com.mx","jvazquez@siccob.com.mx"];
+
+    function validarAcceso() {
+        const emailInput = document.getElementById('emailInput').value.trim().toLowerCase();
+        
+        if (CORREOS_AUTORIZADOS.includes(emailInput)) {
+            // 1. Extraer nombre del correo
+            let nombreUsuario = emailInput.split('@')[0]; // Toma lo que está antes del @
+            nombreUsuario = nombreUsuario.split('.')[0]; // Si hay puntos, toma el primero
+            nombreUsuario = nombreUsuario.charAt(0).toUpperCase() + nombreUsuario.slice(1); // Primera letra Mayúscula
+
+            // 2. Determinar saludo por hora
+            const hora = new Date().getHours();
+            let saludo = "";
+            if (hora >= 6 && hora < 12) saludo = "Buenos días";
+            else if (hora >= 12 && hora < 19) saludo = "Buenas tardes";
+            else saludo = "Buenas noches";
+
+            // 3. Aplicar saludo y mostrar contenido
+            document.getElementById('saludoDinamico').innerText = `${saludo}, ${nombreUsuario}`;
+            document.getElementById('login-container').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+        } else {
+            document.getElementById('errorMsg').style.display = 'block';
+        }
+    }
+
+    function cerrarSesion() {
+        location.reload();
+    }
+</script>
+</body>
+</html>
